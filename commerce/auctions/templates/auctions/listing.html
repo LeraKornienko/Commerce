@@ -1,0 +1,97 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="container">
+    {% if message %}
+        {% if update %}
+        <div class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+        {{ message }}
+        </div>
+        {% endif %}
+    {% endif %}
+    </div>
+
+
+    {% if not listing.isActive and user == listing.price.user %}
+    <div class="alert alert-success" role="alert">
+        Congratulations! You won the Auction!
+    </div>
+    {% endif %}
+
+
+<div class="d-flex flex-row-reverse mx-3">
+    {% if user.is_authenticated and listing.isActive %}
+
+        {% if isListingInWatclist  %}
+            <form action="{% url 'removeWatchlist' id=listing.id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary mx-3" style="background-color: white; border-color: black; width: 200px; color: black;">Remove From Watchlist</button>
+            </form>
+        {% else %}
+            <form action="{% url 'addWatchlist' id=listing.id %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary mx-3" style="background-color: white; border-color: black; width: 200px; color: black;">Add To Watchlist</button>
+            </form>
+        {% endif %}
+        {% if isOwner %}
+            <form action="{% url 'closeAuction' id=listing.id %}" method="POST" class="mx-3">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary mx-3" style="background-color: white; border-color: black; width: 200px; color: black;">Close Auction</button>
+            </form>
+        {% endif %}
+    {% endif %}
+</div>
+
+<div class="column mx-3 my-3">
+    <h2> {{ listing.title }}</h2>
+    <div class="d-flex flex-row">
+        <img src="{{ listing.imageURL }}" alt="{{ listing.title }}" height="400px">
+        <div class="column mx-3 my-3">
+            <p><strong>Description:</strong> {{ listing.description }}</p>
+            <p><strong>Owner:</strong> {{ listing.owner }}</p>
+            <h4>Initial Price: {{ listing.price.bid }}$</h4>
+        </div>
+    </div>
+</div>
+</br>
+    {% if user.is_authenticated %}
+    <form action="{% url 'addBid' id=listing.id %}" method="POST">
+        {% csrf_token %}
+        <div class="form-group mx-3">
+            <label for="addBit">Add Bid</label>
+            <input type="number" min="0" name="addBid" placeholder=" Bid..." style="height: 38px; border-color: black; width: 200px; color: black; vertical-align: middle; margin-left: 5px; border-radius: 0.25rem; border-width: unset;">
+            <button type="submit" class="btn btn-primary mx-3" style="background-color: white; border-color: black; width: 200px; color: black;">Add Bid</button>
+        </div>
+    </form>
+    {% endif %}
+    <h2 class="mx-3">Comments</h2>
+    </br>
+
+    
+    <ul class="list-group">
+        {% for comment in allComments %}
+            <li class="list-group-item">
+                {{ comment.message }}
+                </br>
+                <i style="font-size: 12px;">Comment by <strong style="color: grey;">{{ comment.author }} </strong></i>
+            </li>
+        {% endfor %}
+    </ul>
+    </br>
+        {% if user.is_authenticated %}
+        <form action="{% url 'newComment' id=listing.id %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group mx-3">
+                <label for="newComment">Add Comment</label>
+                <input type="text" name="newComment" placeholder=" Comment..."
+                    style="height: 38px; border-color: black; width: 200px; color: black; vertical-align: middle; margin-left: 5px; border-radius: 0.25rem; border-width: unset;">
+                <button type="submit" class="btn btn-primary mx-3"
+                    style="background-color: white; border-color: black; width: 200px; color: black;">Add Comment</button>
+            </div>
+        </form>
+        {% endif %}
+{% endblock %}

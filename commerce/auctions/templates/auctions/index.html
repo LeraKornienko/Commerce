@@ -1,0 +1,33 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="d-flex justify-content-around mx-4">
+        <h2>Active Listings</h2>
+        <div class="row mx-4">
+        <form action="{% url 'displayCategory' %}" method="POST">
+            {% csrf_token %}
+            <label for="category">Choose a Category:</label>
+            <select name="category" id="category" style="height: 38px; border-color: black; width: 100px; color: black; vertical-align: middle; margin-left: 5px; border-radius: 0.25rem; text-align: center;">
+                {% for cat in categories %}
+                <option value="{{ cat }}">{{ cat }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary mx-3" style="background-color: white; border-color: black; width: 100px; color: black;">Select</button>
+        </form>
+        </div>
+    </div>
+    <div class="row mx-4">
+    {% for listing in listings %}
+        <div class="card" style="width: 18rem; margin: 10px;" id="card">
+        <img src="{{listing.imageURL}}" class="card-img-top" alt="{{listing.title}}">
+        <div class="card-body">
+            <h5 class="card-title">{{listing.title}}</h5>
+            <p class="card-text">price ${{listing.price.bid}}</p>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'listing' id=listing.id %}" class="btn btn-primary" style="background-color: black; border-color: black; width: 245px;">Details</a>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+{% endblock %}
